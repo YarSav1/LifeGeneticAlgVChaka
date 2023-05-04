@@ -1,5 +1,6 @@
 import pygame
 
+import config
 import field_settings.detection_win
 import field_simulation.detection_win
 
@@ -14,11 +15,16 @@ WINDOW_HEIGHT = infoObject.current_w // 100 * 55
 WINDOW = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))  # инициализация окна
 CLOCK = pygame.time.Clock()
 
-CLOCK_FPS = 60  # Сколько выполнять операций в секунду? FPS
+if config.TEST:
+    print('Включен режим теста. Выключите его, чтобы смотреть ща симуляцией.')
 
 running = True
 while running:
-    CLOCK.tick(CLOCK_FPS)
+    CLOCK.tick(config.CLOCK_FPS)
+    # if config.FOR_MEDIUM_FPS_COUNT >=10:
+    #     config.FOR_MEDIUM_FPS_COUNT = 0
+    config.FOR_MEDIUM_FPS_COUNT += 1
+
     pygame.display.update()  # обновляем экран
 
     # Обрабатываем по разделам на экране.
