@@ -3,8 +3,11 @@ units = []
 units_coordinates = []
 units_for_food = []
 units_for_duplicate = []
+units_life = []
 
 food = []
 start = False
 
-time_start = 0
+now_year = 1
+now_mouth = 1
+time_step = 0

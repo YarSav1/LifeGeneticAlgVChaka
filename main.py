@@ -1,6 +1,7 @@
 import pygame
 
 import config
+import config_game
 import field_settings.detection_win
 import field_simulation.detection_win
 
@@ -30,6 +31,8 @@ while running:
     # Обрабатываем по разделам на экране.
     field_settings.detection_win.detection(WINDOW, WINDOW_WIDTH, WINDOW_HEIGHT, CLOCK)
     field_simulation.detection_win.detection(WINDOW, WINDOW_WIDTH, WINDOW_HEIGHT)
+
+    config_game.time_step+=1
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:

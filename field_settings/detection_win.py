@@ -17,6 +17,8 @@ def detection(WINDOW, WINDOW_WIDTH, WINDOW_HEIGHT, CLOCK):
         this_test(WINDOW, WINDOW_WIDTH, WINDOW_HEIGHT, descent_y)
     else:
         descent_y = population(WINDOW, WINDOW_WIDTH, WINDOW_HEIGHT, descent_y)
+        descent_y = now_year(WINDOW, WINDOW_WIDTH, WINDOW_HEIGHT, descent_y)
+        descent_y = now_mouth(WINDOW, WINDOW_WIDTH, WINDOW_HEIGHT, descent_y)
 
 
 def draw_fps(WINDOW, WINDOW_WIDTH, WINDOW_HEIGHT, CLOCK):
@@ -78,6 +80,32 @@ def this_test(WINDOW, WINDOW_WIDTH, WINDOW_HEIGHT, descent_y):
 
 def population(WINDOW, WINDOW_WIDTH, WINDOW_HEIGHT, descent_y):
     Text = ShentoxRegular30.render(f'Популяция: {len(config_game.units)}', True, (0, 0, 0))
+
+    w, h = Text.get_width(), Text.get_height()  # узнаем размер текста
+    centre_x = WINDOW_WIDTH / 2 - w / 2
+
+    WINDOW.blit(Text, (centre_x, descent_y))
+    descent_y += WINDOW_HEIGHT / 100 + h
+    return descent_y
+def now_year(WINDOW, WINDOW_WIDTH, WINDOW_HEIGHT, descent_y):
+    Text = ShentoxRegular30.render(f'Год: {config_game.now_year}', True, (0, 0, 0))
+
+    w, h = Text.get_width(), Text.get_height()  # узнаем размер текста
+    centre_x = WINDOW_WIDTH / 2 - w / 2
+
+    WINDOW.blit(Text, (centre_x, descent_y))
+    descent_y += WINDOW_HEIGHT / 100 + h
+    return descent_y
+def now_mouth(WINDOW, WINDOW_WIDTH, WINDOW_HEIGHT, descent_y):
+    if config_game.now_mouth in [12, 1, 2]:
+        text = 'Зима'
+    elif config_game.now_mouth in [3, 4, 5]:
+        text = 'Весна'
+    elif config_game.now_mouth in [6, 7, 8]:
+        text = 'Лето'
+    elif config_game.now_mouth in [9, 10, 11]:
+        text = 'Осень'
+    Text = ShentoxRegular30.render(f'Месяц: {config_game.now_mouth} - {text}', True, (0, 0, 0))
 
     w, h = Text.get_width(), Text.get_height()  # узнаем размер текста
     centre_x = WINDOW_WIDTH / 2 - w / 2
