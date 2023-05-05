@@ -2,6 +2,7 @@
 import pygame
 
 import config
+import config_game
 from config import BLACK, WHITE, ORANGE_1, ComicSansMS30, ShentoxRegular30
 
 
@@ -15,7 +16,7 @@ def detection(WINDOW, WINDOW_WIDTH, WINDOW_HEIGHT, CLOCK):
     if config.TEST:
         this_test(WINDOW, WINDOW_WIDTH, WINDOW_HEIGHT, descent_y)
     else:
-        pass
+        descent_y = population(WINDOW, WINDOW_WIDTH, WINDOW_HEIGHT, descent_y)
 
 
 def draw_fps(WINDOW, WINDOW_WIDTH, WINDOW_HEIGHT, CLOCK):
@@ -67,6 +68,16 @@ def line(WINDOW, WINDOW_WIDTH, WINDOW_HEIGHT, descent_y):
 
 def this_test(WINDOW, WINDOW_WIDTH, WINDOW_HEIGHT, descent_y):
     Text = ShentoxRegular30.render(f'Включен тестовый режим.', True, (0, 0, 0))
+
+    w, h = Text.get_width(), Text.get_height()  # узнаем размер текста
+    centre_x = WINDOW_WIDTH / 2 - w / 2
+
+    WINDOW.blit(Text, (centre_x, descent_y))
+    descent_y += WINDOW_HEIGHT / 100 + h
+    return descent_y
+
+def population(WINDOW, WINDOW_WIDTH, WINDOW_HEIGHT, descent_y):
+    Text = ShentoxRegular30.render(f'Популяция: {len(config_game.units)}', True, (0, 0, 0))
 
     w, h = Text.get_width(), Text.get_height()  # узнаем размер текста
     centre_x = WINDOW_WIDTH / 2 - w / 2

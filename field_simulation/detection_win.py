@@ -27,6 +27,8 @@ def detection(WINDOW, WINDOW_WIDTH, WINDOW_HEIGHT):
 
         _moving_unit(WINDOW, WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_START)
 
+        _duplicate(WINDOW)
+
 
 def some_draw(WINDOW, WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_START):
     x = random.randint(WINDOW_START, WINDOW_WIDTH)
@@ -41,7 +43,7 @@ def _spawn(WINDOW, WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_START):
             y = random.randint(0, WINDOW_HEIGHT)
             color_unit = random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)
             pygame.draw.rect(WINDOW, (color_unit),
-                             (x, y, 10, 10))
+                             (x, y, config.SIZE_UNIT, config.SIZE_UNIT))
 
             config_game.units.append(color_unit)
             config_game.units_coordinates.append([x, y])
@@ -61,6 +63,7 @@ def _spawn_food(WINDOW, WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_START):
             config_game.food.append([x, y])
             for unit in config_game.units:
                 config_game.units_for_food.append([None, None])
+                config_game.units_for_duplicate.append(0)
         config_game.start = True
 
 
@@ -80,8 +83,9 @@ def _draw_unit(WINDOW, WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_START):
         pygame.draw.rect(WINDOW, (color_unit),
                          (x, y, config.SIZE_UNIT, config.SIZE_UNIT))
         for food in config_game.food:
-            if x < food[0] < x + config.SIZE_UNIT:
-                if y < food[1] < y + config.SIZE_UNIT:
+            if x <= food[0] <= x + config.SIZE_UNIT:
+                if y <= food[1] <= y + config.SIZE_UNIT:
+                    config_game.units_for_duplicate[config_game.units.index(unit)]+=config.ENERGY_FOOD
                     config_game.food.remove(food)
                     for food_second in config_game.units_for_food:
                         if food_second == food:
@@ -160,3 +164,26 @@ def _spawn_food_every_time(WINDOW, WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_START):
 
             config_game.food.append([x, y])
         config_game.time_start = time.time()
+
+def _spawn_duplicate(WINDOW, x, y):
+
+    color_unit = random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)
+    pygame.draw.rect(WINDOW, (color_unit),
+                     (x, y, config.SIZE_UNIT, config.SIZE_UNIT))
+
+    config_game.units.append(color_unit)
+    config_game.units_coordinates.append([x, y])
+    config_game.units_for_duplicate.append(0)
+    config_game.units_for_food.append([None, None])
+
+def _duplicate(WINDOW):
+    for unit in config_game.units:
+        index_unit = config_game.units.index(unit)
+
+        x = config_game.units_coordinates[index_unit][0]
+        y = config_game.units_coordinates[index_unit][1]
+
+        duplicate = config_game.units_for_duplicate[index_unit]
+        if duplicate >= config.FOOD_FOR_DUPLICATE:
+            _spawn_duplicate(WINDOW, x, y)
+            config_game.units_for_duplicate[config_game.units.index(unit)] = 0
