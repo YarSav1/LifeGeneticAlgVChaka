@@ -29,14 +29,12 @@ def detection(WINDOW, WINDOW_WIDTH, WINDOW_HEIGHT):
             _draw_radius_unit(WINDOW, WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_START)
             _moving_unit(WINDOW, WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_START)
 
-
         _zero_step()
 
         if config_game.units:
             _duplicate(WINDOW)
             _plus_life(WINDOW)
             _food_after_dead(WINDOW)
-
 
 
 def some_draw(WINDOW, WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_START):
@@ -62,7 +60,8 @@ def _insert_unit(id_unit, x, y, unit=None):
         stop = random.randint(1, 100)
         config_game.unit_genes.append([left, right, up, down, speed, radius, duplicate, plus_life, stop])
     else:
-        if random.choices([True, False], weights=[config.CHANCE_MUTATION, 100-config.CHANCE_MUTATION], k=1)[0] is False:
+        if random.choices([True, False], weights=[config.CHANCE_MUTATION, 100 - config.CHANCE_MUTATION], k=1)[
+            0] is False:
             config_game.unit_genes.append(config_game.unit_genes[config_game.units.index(unit)])
         else:
             genes = random.choice(config_game.unit_genes[config_game.units.index(unit)])
@@ -135,8 +134,7 @@ def _draw_unit(WINDOW, WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_START):
         x, y = config_game.units_coordinates[config_game.units.index(unit)][0], \
                config_game.units_coordinates[config_game.units.index(unit)][1]
         color_unit = config.GREEN_1
-        pygame.draw.rect(WINDOW, (color_unit),
-                         (x, y, config.SIZE_UNIT, config.SIZE_UNIT))
+        pygame.draw.rect(WINDOW, color_unit, (x, y, config.SIZE_UNIT, config.SIZE_UNIT))
         for food in config_game.food:
             if x <= food[0] <= x + config.SIZE_UNIT:
                 if y <= food[1] <= y + config.SIZE_UNIT:
@@ -201,55 +199,65 @@ def _moving_unit(WINDOW, WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_START):
             if y_food - (y_now + config.SIZE_UNIT) >= 0:
                 plus_y = config_game.unit_genes[config_game.units.index(unit)][4]
         else:
-            dec_left, dec_right, dec_up, dec_down, dec_stop = config_game.unit_genes[config_game.units.index(unit)][0],\
-                                                    config_game.unit_genes[config_game.units.index(unit)][1], \
-                                                    config_game.unit_genes[config_game.units.index(unit)][2], \
-                                                    config_game.unit_genes[config_game.units.index(unit)][3], \
-                                                    config_game.unit_genes[config_game.units.index(unit)][8]
+            dec_left, dec_right, dec_up, dec_down, dec_stop = config_game.unit_genes[config_game.units.index(unit)][0], \
+                                                              config_game.unit_genes[config_game.units.index(unit)][1], \
+                                                              config_game.unit_genes[config_game.units.index(unit)][2], \
+                                                              config_game.unit_genes[config_game.units.index(unit)][3], \
+                                                              config_game.unit_genes[config_game.units.index(unit)][8]
             speed_unit = config_game.unit_genes[config_game.units.index(unit)][4]
-            if x_now + config.SIZE_UNIT + 1 > WINDOW_WIDTH:  # справа край экрана
-                x_dec = random.choices(['left', 'stop'], weights=[dec_left, dec_stop], k=1)[0]
-                if x_dec == 'left':
-                    plus_x = -random.randint(1, speed_unit)
-                elif x_dec == 'stop':
-                    plus_x = 0
-            elif x_now - config_game.unit_genes[config_game.units.index(unit)][4] < WINDOW_START:  # слева край экрана
-                x_dec = random.choices(['right', 'stop'], weights=[dec_right, dec_stop], k=1)[0]
-                if x_dec == 'right':
-                    plus_x = random.randint(1, speed_unit)
-                elif x_dec == 'stop':
-                    plus_x = 0
-            elif y_now - config_game.unit_genes[config_game.units.index(unit)][4] < 0:  # верх край экрана
-                y_dec = random.choices(['down', 'stop'], weights=[dec_down, dec_stop], k=1)[0]
-                if y_dec == 'down':
-                    plus_y = random.randint(1, speed_unit)
-                elif y_dec == 'stop':
-                    plus_y = 0
-            elif y_now + config.SIZE_UNIT + config_game.unit_genes[config_game.units.index(unit)][
-                4] > WINDOW_HEIGHT:  # низ, край экрана
-                y_dec = random.choices(['up', 'stop'], weights=[dec_up, dec_stop], k=1)[0]
-                if y_dec == 'up':
-                    plus_y = -random.randint(1, speed_unit)
-                elif y_dec == 'stop':
-                    plus_y = 0
-            else:
-                x_dec = random.choices(['left', 'right', 'stop'], weights=[dec_left, dec_right, dec_stop], k=1)[0]
-                y_dec = random.choices(['up', 'down', 'stop'], weights=[dec_up, dec_down, dec_stop], k=1)[0]
-                if x_dec == 'left':
-                    plus_x = -random.randint(1, speed_unit)
-                elif x_dec == 'right':
-                    plus_x = random.randint(1, speed_unit)
-                elif x_dec == 'stop':
-                    plus_x = 0
-                if y_dec == 'up':
-                    plus_y = -random.randint(1, speed_unit)
-                elif y_dec == 'down':
-                    plus_y = random.randint(1, speed_unit)
-                elif y_dec == 'stop':
-                    plus_y = 0
+
+            x_dec = random.choices(['left', 'right', 'stop'], weights=[dec_left, dec_right, dec_stop], k=1)[0]
+            y_dec = random.choices(['up', 'down', 'stop'], weights=[dec_up, dec_down, dec_stop], k=1)[0]
+            if x_dec == 'left':
+                plus_x = -random.randint(1, speed_unit)
+            elif x_dec == 'right':
+                plus_x = random.randint(1, speed_unit)
+            elif x_dec == 'stop':
+                plus_x = 0
+            if y_dec == 'up':
+                plus_y = -random.randint(1, speed_unit)
+            elif y_dec == 'down':
+                plus_y = random.randint(1, speed_unit)
+            elif y_dec == 'stop':
+                plus_y = 0
 
         config_game.units_coordinates[config_game.units.index(unit)][0] += plus_x
         config_game.units_coordinates[config_game.units.index(unit)][1] += plus_y
+
+        x_now = config_game.units_coordinates[config_game.units.index(unit)][0]
+        y_now = config_game.units_coordinates[config_game.units.index(unit)][1]
+        if x_now + config.SIZE_UNIT + 1 > WINDOW_WIDTH:  # справа край экрана
+            # print(f'[{x_now},{y_now}] - {WINDOW_START}-{WINDOW_WIDTH} | 0 - {WINDOW_HEIGHT}')
+            config_game.units_coordinates[config_game.units.index(unit)] = [int(WINDOW_START), y_now]
+                # x_dec = random.choices(['left', 'stop'], weights=[dec_left, dec_stop], k=1)[0]
+                # if x_dec == 'left':
+                #     plus_x = -random.randint(1, speed_unit)
+                # elif x_dec == 'stop':
+                #     plus_x = 0
+        elif x_now - config.SIZE_UNIT < WINDOW_START:  # слева край экрана
+            # print(f'[{x_now},{y_now}] - {WINDOW_START}-{WINDOW_WIDTH} | 0 - {WINDOW_HEIGHT}')
+            config_game.units_coordinates[config_game.units.index(unit)] = [int(WINDOW_WIDTH-config.SIZE_UNIT), y_now]
+            #     x_dec = random.choices(['right', 'stop'], weights=[dec_right, dec_stop], k=1)[0]
+            #     if x_dec == 'right':
+            #         plus_x = random.randint(1, speed_unit)
+            #     elif x_dec == 'stop':
+            #         plus_x = 0
+        elif y_now - config.SIZE_UNIT < 0:  # верх край экрана
+            # print(f'[{x_now},{y_now}] - {WINDOW_START}-{WINDOW_WIDTH} | 0 - {WINDOW_HEIGHT}')
+            config_game.units_coordinates[config_game.units.index(unit)] = [x_now, int(WINDOW_HEIGHT)-config.SIZE_UNIT]
+            #     y_dec = random.choices(['down', 'stop'], weights=[dec_down, dec_stop], k=1)[0]
+            #     if y_dec == 'down':
+            #         plus_y = random.randint(1, speed_unit)
+            #     elif y_dec == 'stop':
+            #         plus_y = 0
+        elif y_now + config.SIZE_UNIT > WINDOW_HEIGHT:  # низ, край экрана
+            # print(f'[{x_now},{y_now}] - {WINDOW_START}-{WINDOW_WIDTH} | 0 - {WINDOW_HEIGHT}')
+            config_game.units_coordinates[config_game.units.index(unit)] = [x_now, 0]
+            #     y_dec = random.choices(['up', 'stop'], weights=[dec_up, dec_stop], k=1)[0]
+            #     if y_dec == 'up':
+            #         plus_y = -random.randint(1, speed_unit)
+            #     elif y_dec == 'stop':
+            #         plus_y = 0
 
 
 def _spawn_food_every_time(WINDOW, WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_START):
@@ -321,15 +329,17 @@ def _food_after_dead(WINDOW):
                                      (x, y, config.SIZE_FOOD, config.SIZE_FOOD))
             _delete_unit(unit)
 
+
 def dominant_gen():
     lll = []
     for gens in config_game.unit_genes:
         in_lll = ''
         for gen in gens:
-            in_lll+=f'{gen} '
+            in_lll += f'{gen} '
         lll.append(in_lll)
     my_dict = Counter(lll)
     print(my_dict)
+
 
 def _zero_step():
     if config_game.time_step >= config.ONE_YEAR:
