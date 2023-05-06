@@ -94,6 +94,7 @@ def _delete_unit(unit):
     config_game.units_life.pop(index_unit)
     config_game.unit_genes.pop(index_unit)
     config_game.unit_color.pop(index_unit)
+    config_game.ttt_.pop(index_unit)
 
 
 
@@ -157,7 +158,7 @@ def _draw_unit(WINDOW):
             draw_color.append((color_unit[2]+sum_msv)-255)
         else:
             draw_color.append(color_unit[2])
-
+        config_game.ttt_.append([draw_color[0], draw_color[1], draw_color[2]])
         # print(draw_color)
         pygame.draw.rect(WINDOW, (draw_color[0], draw_color[1], draw_color[2]), (x, y, config.SIZE_UNIT, config.SIZE_UNIT))
         threading.Thread(target=check_food_in_unit, args=(unit, )).start()

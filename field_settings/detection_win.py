@@ -155,14 +155,13 @@ def three_rect(WINDOW, WINDOW_WIDTH, WINDOW_HEIGHT, descent_y):
     among = w/2
     centre_x = WINDOW_WIDTH / 2 - w / 2
     start_x = centre_x-w-among
-
-    pygame.draw.rect(WINDOW, (config_game.unit_color[config_game.unit_genes.index(for_color[0])]),
+    pygame.draw.rect(WINDOW, (config_game.ttt_[config_game.unit_genes.index(for_color[0])]),
                      (start_x, descent_y, w, w))
     start_x+=among+w
-    pygame.draw.rect(WINDOW, (config_game.unit_color[config_game.unit_genes.index(for_color[1])]),
+    pygame.draw.rect(WINDOW, (config_game.ttt_[config_game.unit_genes.index(for_color[1])]),
                      (start_x, descent_y, w, w))
     start_x+=among+w
-    pygame.draw.rect(WINDOW, (config_game.unit_color[config_game.unit_genes.index(for_color[2])]),
+    pygame.draw.rect(WINDOW, (config_game.ttt_[config_game.unit_genes.index(for_color[2])]),
                      (start_x, descent_y, w, w))
     #
     # w, h = Text.get_width(), Text.get_height()  # узнаем размер текста

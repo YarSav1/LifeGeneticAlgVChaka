@@ -17,3 +17,5 @@ start = False
 now_year = 1
 now_mouth = 1
 time_step = 0
+
+ttt_ = []
