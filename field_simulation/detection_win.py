@@ -62,7 +62,7 @@ def _insert_unit(id_unit, x, y, unit=None):
         stop = random.randint(1, 100)
         config_game.unit_genes.append([left, right, up, down, speed, radius, duplicate, plus_life, stop])
     else:
-        if random.choices([True, False], weights=[5, 95 ], k=1)[0] is False:
+        if random.choices([True, False], weights=[config.CHANCE_MUTATION, 100-config.CHANCE_MUTATION], k=1)[0] is False:
             config_game.unit_genes.append(config_game.unit_genes[config_game.units.index(unit)])
         else:
             genes = random.choice(config_game.unit_genes[config_game.units.index(unit)])
