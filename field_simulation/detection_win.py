@@ -51,7 +51,9 @@ def _insert_unit(id_unit, x, y, unit=None):
     config_game.units_for_food.append([None, None])
     config_game.units_for_duplicate.append(10)
     config_game.units_life.append(0)
+
     if unit is None:
+        # config_game.unit_color.append(config_game.unit_color[config_game.units.index(id_unit)])
         #  [налево, направо, наверх, вниз, скорость, радиус, размножение, увеличение жизни]
         left, right, up, down = random.randint(1, 100), random.randint(1, 100), \
                                 random.randint(1, 100), random.randint(1, 100)
@@ -60,6 +62,8 @@ def _insert_unit(id_unit, x, y, unit=None):
         stop = random.randint(1, 100)
         config_game.unit_genes.append([left, right, up, down, speed, radius, duplicate, plus_life, stop])
     else:
+        config_game.unit_color.append(config_game.unit_color[config_game.units.index(unit)])
+        # print(config_game.unit_color)
         if random.choices([True, False], weights=[config.CHANCE_MUTATION, 100 - config.CHANCE_MUTATION], k=1)[
             0] is False:
             config_game.unit_genes.append(config_game.unit_genes[config_game.units.index(unit)])
@@ -91,6 +95,7 @@ def _delete_unit(unit):
     config_game.units_for_duplicate.remove(config_game.units_for_duplicate[index_unit])
     config_game.units_life.remove(config_game.units_life[index_unit])
     config_game.unit_genes.remove(config_game.unit_genes[index_unit])
+    config_game.unit_color.remove(config_game.unit_color[index_unit])
 
 
 def _spawn(WINDOW, WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_START):
@@ -98,10 +103,13 @@ def _spawn(WINDOW, WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_START):
         for unit in range(config.SPAWN_FIRST_UNIT):
             x = random.randint(WINDOW_START, WINDOW_WIDTH)
             y = random.randint(0, WINDOW_HEIGHT)
-            color_unit = random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)
+            id_unit = random.randint(0, 1000), random.randint(0, 1000), random.randint(0, 1000)
+
+            color_unit = [random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)]
+            config_game.unit_color.append(color_unit)
             pygame.draw.rect(WINDOW, (color_unit),
                              (x, y, config.SIZE_UNIT, config.SIZE_UNIT))
-            _insert_unit(color_unit, x, y)
+            _insert_unit(id_unit, x, y)
 
         print(config_game.units)
         print(config_game.units_coordinates)
@@ -133,8 +141,27 @@ def _draw_unit(WINDOW, WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_START):
     for unit in config_game.units:
         x, y = config_game.units_coordinates[config_game.units.index(unit)][0], \
                config_game.units_coordinates[config_game.units.index(unit)][1]
-        color_unit = config.GREEN_1
-        pygame.draw.rect(WINDOW, color_unit, (x, y, config.SIZE_UNIT, config.SIZE_UNIT))
+        sum_msv = int(sum(unit)/50)
+        # print(sum_msv)
+        draw_color = []
+        color_unit = config_game.unit_color[config_game.units.index(unit)]
+        # print(color_unit)
+        if color_unit[0]+sum_msv > 255:
+            draw_color.append((color_unit[0]+sum_msv)-255)
+        else:
+            draw_color.append(color_unit[0])
+        if color_unit[1]+sum_msv > 100:
+            draw_color.append((color_unit[1]+sum_msv)-100)
+        else:
+            draw_color.append(color_unit[1])
+        if color_unit[2]+sum_msv > 255:
+            draw_color.append((color_unit[2]+sum_msv)-255)
+        else:
+            draw_color.append(color_unit[2])
+        # print(draw_color)
+
+
+        pygame.draw.rect(WINDOW, (draw_color[0], draw_color[1], draw_color[2]), (x, y, config.SIZE_UNIT, config.SIZE_UNIT))
         for food in config_game.food:
             if x <= food[0] <= x + config.SIZE_UNIT:
                 if y <= food[1] <= y + config.SIZE_UNIT:
@@ -277,11 +304,12 @@ def _spawn_food_every_time(WINDOW, WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_START):
 
 
 def _spawn_duplicate(WINDOW, unit, x, y):
-    color_unit = random.randint(0, 1000), random.randint(0, 1000), random.randint(0, 1000)
-    pygame.draw.rect(WINDOW, (config.GREEN_1),
+    id_unit = random.randint(0, 1000), random.randint(0, 1000), random.randint(0, 1000)
+    color_unit = config_game.unit_color[config_game.units.index(unit)]
+    pygame.draw.rect(WINDOW, (color_unit),
                      (x, y, config.SIZE_UNIT, config.SIZE_UNIT))
 
-    _insert_unit(color_unit, x, y, unit)
+    _insert_unit(id_unit, x, y, unit)
 
 
 def _duplicate(WINDOW):
