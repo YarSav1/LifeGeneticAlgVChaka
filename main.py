@@ -14,13 +14,13 @@ WINDOW_WIDTH = infoObject.current_w
 WINDOW_HEIGHT = infoObject.current_w // 100 * 55
 
 WINDOW = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))  # инициализация окна
+WINDOW.set_alpha(None)
 CLOCK = pygame.time.Clock()
 
 if config.TEST:
     print('Включен режим теста. Выключите его, чтобы смотреть ща симуляцией.')
-
-running = True
-while running:
+running = 1
+while running == 1:
     CLOCK.tick(config.CLOCK_FPS)
     # if config.FOR_MEDIUM_FPS_COUNT >=10:
     #     config.FOR_MEDIUM_FPS_COUNT = 0
@@ -36,5 +36,8 @@ while running:
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
-            running = False
             pygame.quit()
+            running = 0
+
+# a = random.choices([5, 7], weights=[1000000000, 10], k=1)
+

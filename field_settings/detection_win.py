@@ -26,7 +26,7 @@ def draw_fps(WINDOW, WINDOW_WIDTH, WINDOW_HEIGHT, CLOCK):
     Text = ShentoxRegular30.render(f'FPS: {FPS}', True, (0, 0, 0))
     if config.MAX_FPS < FPS:
         config.MAX_FPS = FPS
-    config.FOR_MEDIUM_FPS += FPS
+    # config.FOR_MEDIUM_FPS += FPS
 
     w, h = Text.get_width(), Text.get_height()  # узнаем размер текста
     centre_x = WINDOW_WIDTH / 2 - w / 2
