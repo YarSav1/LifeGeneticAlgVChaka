@@ -17,24 +17,21 @@ def detection(WINDOW, WINDOW_WIDTH, WINDOW_HEIGHT):
     if TEST:
         some_draw(WINDOW, WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_START)
     else:
-        pygame.draw.rect(WINDOW, WHITE, (WINDOW_START, 0, WINDOW_WIDTH, WINDOW_HEIGHT))
+
         _spawn(WINDOW, WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_START)
         _spawn_food(WINDOW, WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_START)
         _spawn_food_every_time(WINDOW, WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_START)
 
-        _draw_food(WINDOW, WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_START)
 
-        if config_game.units:
-            _draw_unit(WINDOW, WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_START)
-            _draw_radius_unit(WINDOW, WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_START)
-            _moving_unit(WINDOW, WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_START)
 
-        _zero_step()
+        # if config_game.units:
 
-        if config_game.units:
-            _duplicate(WINDOW)
-            _plus_life(WINDOW)
-            _food_after_dead(WINDOW)
+
+
+        _zero_step(WINDOW, WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_START)
+
+        # if config_game.units:
+
 
 
 def some_draw(WINDOW, WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_START):
@@ -45,19 +42,19 @@ def some_draw(WINDOW, WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_START):
 
 # a = random.choices([5, 7], weights=[1000000000, 10], k=1)
 
-def _insert_unit(id_unit, x, y, unit=None):
+def _insert_unit(id_unit, x, y, unit=None, color=None):
     config_game.units.append(id_unit)
     config_game.units_coordinates.append([x, y])
     config_game.units_for_food.append([None, None])
-    config_game.units_for_duplicate.append(10)
+    config_game.units_for_duplicate.append(config.FULLNESS)
     config_game.units_life.append(0)
 
     if unit is None:
-        # config_game.unit_color.append(config_game.unit_color[config_game.units.index(id_unit)])
+        config_game.unit_color.append(color)
         #  [налево, направо, наверх, вниз, скорость, радиус, размножение, увеличение жизни]
         left, right, up, down = random.randint(1, 100), random.randint(1, 100), \
                                 random.randint(1, 100), random.randint(1, 100)
-        speed, radius, duplicate, plus_life = random.randint(1, config.SIZE_UNIT), random.randint(1, 10), \
+        speed, radius, duplicate, plus_life = random.randint(1, config.SIZE_UNIT), random.randint(1, 20), \
                                               random.randint(1, 100), random.randint(1, 100)
         stop = random.randint(1, 100)
         config_game.unit_genes.append([left, right, up, down, speed, radius, duplicate, plus_life, stop])
@@ -75,7 +72,7 @@ def _insert_unit(id_unit, x, y, unit=None):
             elif index_genes == 4:
                 new_gen = random.randint(1, config.SIZE_UNIT)
             elif index_genes == 5:
-                new_gen = random.randint(1, 10)
+                new_gen = random.randint(1, 20)
             else:
                 return
             new_genes = []
@@ -95,7 +92,8 @@ def _delete_unit(unit):
     config_game.units_for_duplicate.remove(config_game.units_for_duplicate[index_unit])
     config_game.units_life.remove(config_game.units_life[index_unit])
     config_game.unit_genes.remove(config_game.unit_genes[index_unit])
-    config_game.unit_color.remove(config_game.unit_color[index_unit])
+    config_game.unit_color.pop(index_unit)
+
 
 
 def _spawn(WINDOW, WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_START):
@@ -106,10 +104,10 @@ def _spawn(WINDOW, WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_START):
             id_unit = random.randint(0, 1000), random.randint(0, 1000), random.randint(0, 1000)
 
             color_unit = [random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)]
-            config_game.unit_color.append(color_unit)
+            # config_game.unit_color.append(color_unit)
             pygame.draw.rect(WINDOW, (color_unit),
                              (x, y, config.SIZE_UNIT, config.SIZE_UNIT))
-            _insert_unit(id_unit, x, y)
+            _insert_unit(id_unit, x, y, None, color_unit)
 
         print(config_game.units)
         print(config_game.units_coordinates)
@@ -251,6 +249,8 @@ def _moving_unit(WINDOW, WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_START):
         config_game.units_coordinates[config_game.units.index(unit)][0] += plus_x
         config_game.units_coordinates[config_game.units.index(unit)][1] += plus_y
 
+        config_game.units_for_duplicate[config_game.units.index(unit)] -=(abs(plus_y)+abs(plus_y))
+
         x_now = config_game.units_coordinates[config_game.units.index(unit)][0]
         y_now = config_game.units_coordinates[config_game.units.index(unit)][1]
         if x_now + 1 > WINDOW_WIDTH:  # справа край экрана
@@ -341,7 +341,7 @@ def _plus_life(WINDOW):
                 config_game.units_life[config_game.units.index(unit)] -= config.PLUS_LIFE_AFTER
 
 
-def _food_after_dead(WINDOW):
+def _food_after_dead(WINDOW, WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_START):
     for unit in config_game.units:
         index_unit = config_game.units.index(unit)
         len_life = config_game.units_life[index_unit]
@@ -359,7 +359,20 @@ def _food_after_dead(WINDOW):
                     config_game.food.append([x, y])
                     pygame.draw.rect(WINDOW, (color_food),
                                      (x, y, config.SIZE_FOOD, config.SIZE_FOOD))
+                else:
+                    x = random.randint(WINDOW_START, WINDOW_WIDTH)
+                    y = random.randint(0, WINDOW_HEIGHT)
+                    config_game.food.append([x, y])
+                    pygame.draw.rect(WINDOW, (color_food),
+                                     (x, y, config.SIZE_FOOD, config.SIZE_FOOD))
             _delete_unit(unit)
+        else:
+
+            index_unit = config_game.units.index(unit)
+            len_food = config_game.units_for_duplicate[index_unit]
+            if len_food <= config.STARVING:
+                _delete_unit(unit)
+
 
 
 def dominant_gen():
@@ -370,10 +383,10 @@ def dominant_gen():
             in_lll += f'{gen} '
         lll.append(in_lll)
     my_dict = Counter(lll)
-    print(my_dict)
+    print(f'Цветов: {len(config_game.unit_color)}:{len(config_game.units)} | {my_dict}')
 
 
-def _zero_step():
+def _zero_step(WINDOW, WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_START):
     if config_game.time_step >= config.ONE_YEAR:
         config_game.now_year += 1
         config_game.time_step = 0
@@ -383,6 +396,18 @@ def _zero_step():
         config_game.now_mouth += 1
         for unit in config_game.units:
             config_game.units_life[config_game.units.index(unit)] += 1
+
+        pygame.draw.rect(WINDOW, WHITE, (WINDOW_START, 0, WINDOW_WIDTH, WINDOW_HEIGHT))
+        _draw_food(WINDOW, WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_START)
+        _draw_unit(WINDOW, WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_START)
+
+        _draw_radius_unit(WINDOW, WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_START)
+        _moving_unit(WINDOW, WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_START)
+        _duplicate(WINDOW)
+        _plus_life(WINDOW)
+
+        _food_after_dead(WINDOW, WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_START)
+
 
         # if config_game.now_mouth == 11 and int(config.ONE_YEAR / 12 * 11) >= config_game.time_step:
         #     config_game.now_mouth = 12
