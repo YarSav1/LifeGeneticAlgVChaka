@@ -1,4 +1,6 @@
 # НАСТРОЙКИ
+from collections import Counter
+
 import pygame
 
 import config
@@ -19,6 +21,11 @@ def detection(WINDOW, WINDOW_WIDTH, WINDOW_HEIGHT, CLOCK):
         descent_y = population(WINDOW, WINDOW_WIDTH, WINDOW_HEIGHT, descent_y)
         descent_y = now_year(WINDOW, WINDOW_WIDTH, WINDOW_HEIGHT, descent_y)
         descent_y = now_mouth(WINDOW, WINDOW_WIDTH, WINDOW_HEIGHT, descent_y)
+        descent_y = line(WINDOW, WINDOW_WIDTH, WINDOW_HEIGHT, descent_y)
+        descent_y = top_three_gens(WINDOW, WINDOW_WIDTH, WINDOW_HEIGHT, descent_y)
+        descent_y = three_rect(WINDOW, WINDOW_WIDTH, WINDOW_HEIGHT, descent_y)
+        descent_y = line(WINDOW, WINDOW_WIDTH, WINDOW_HEIGHT, descent_y)
+
 
 
 def draw_fps(WINDOW, WINDOW_WIDTH, WINDOW_HEIGHT, CLOCK):
@@ -105,6 +112,8 @@ def now_mouth(WINDOW, WINDOW_WIDTH, WINDOW_HEIGHT, descent_y):
         text = 'Лето'
     elif config_game.now_mouth in [9, 10, 11]:
         text = 'Осень'
+    else:
+        text = 'ХЗ'
     Text = ShentoxRegular30.render(f'Месяц: {config_game.now_mouth} - {text}', True, (0, 0, 0))
 
     w, h = Text.get_width(), Text.get_height()  # узнаем размер текста
@@ -112,4 +121,77 @@ def now_mouth(WINDOW, WINDOW_WIDTH, WINDOW_HEIGHT, descent_y):
 
     WINDOW.blit(Text, (centre_x, descent_y))
     descent_y += WINDOW_HEIGHT / 100 + h
+    return descent_y
+def top_three_gens(WINDOW, WINDOW_WIDTH, WINDOW_HEIGHT, descent_y):
+    Text = ShentoxRegular30.render(f'Топ 3 гена.', True, (0, 0, 0))
+
+    w, h = Text.get_width(), Text.get_height()  # узнаем размер текста
+    centre_x = WINDOW_WIDTH / 2 - w / 2
+
+    WINDOW.blit(Text, (centre_x, descent_y))
+    descent_y += WINDOW_HEIGHT / 100 + h
+    return descent_y
+
+def three_rect(WINDOW, WINDOW_WIDTH, WINDOW_HEIGHT, descent_y):
+    for_color = []
+    lll = []
+    for gens in config_game.unit_genes:
+        in_lll = ''
+        for gen in gens:
+            in_lll += f'{gen}.'
+
+        lll.append(in_lll[:-1])
+    my_dict = Counter(lll)
+    for text in my_dict:
+        text = text.split(sep='.')
+        sbor = []
+        for g in text:
+            sbor.append(int(g))
+        for_color.append(sbor)
+    # print(f'Цветов: {len(config_game.unit_color)}:{len(config_game.units)} | {my_dict}')
+    # print(f'{my_dict}')
+    w = WINDOW_WIDTH/100*20
+    among = w/2
+    centre_x = WINDOW_WIDTH / 2 - w / 2
+    start_x = centre_x-w-among
+
+    pygame.draw.rect(WINDOW, (config_game.unit_color[config_game.unit_genes.index(for_color[0])]),
+                     (start_x, descent_y, w, w))
+    start_x+=among+w
+    pygame.draw.rect(WINDOW, (config_game.unit_color[config_game.unit_genes.index(for_color[1])]),
+                     (start_x, descent_y, w, w))
+    start_x+=among+w
+    pygame.draw.rect(WINDOW, (config_game.unit_color[config_game.unit_genes.index(for_color[2])]),
+                     (start_x, descent_y, w, w))
+    #
+    # w, h = Text.get_width(), Text.get_height()  # узнаем размер текста
+    # centre_x = WINDOW_WIDTH / 2 - w / 2
+    #
+    # WINDOW.blit(Text, (centre_x, descent_y))
+    descent_y += WINDOW_HEIGHT / 100 + w
+
+    Text = config.ShentoxRegular16.render(f'Топ-1: {for_color[0]}', True, (0, 0, 0))
+    w, h = Text.get_width(), Text.get_height()  # узнаем размер текста
+    centre_x = WINDOW_WIDTH / 2 - w / 2
+
+    WINDOW.blit(Text, (centre_x, descent_y))
+
+    descent_y += WINDOW_HEIGHT / 100 + h
+
+    Text = config.ShentoxRegular16.render(f'Топ-2: {for_color[1]}', True, (0, 0, 0))
+    w, h = Text.get_width(), Text.get_height()  # узнаем размер текста
+    centre_x = WINDOW_WIDTH / 2 - w / 2
+
+    WINDOW.blit(Text, (centre_x, descent_y))
+
+    descent_y += WINDOW_HEIGHT / 100 + h
+
+    Text = config.ShentoxRegular16.render(f'Топ-3: {for_color[2]}', True, (0, 0, 0))
+    w, h = Text.get_width(), Text.get_height()  # узнаем размер текста
+    centre_x = WINDOW_WIDTH / 2 - w / 2
+
+    WINDOW.blit(Text, (centre_x, descent_y))
+
+    descent_y += WINDOW_HEIGHT / 100 + h
+
     return descent_y

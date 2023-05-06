@@ -52,7 +52,7 @@ def _insert_unit(id_unit, x, y, unit=None, color=None):
 
     if unit is None:
         config_game.unit_color.append(color)
-        #  [налево, направо, наверх, вниз, скорость, радиус, размножение, увеличение жизни]
+        #  [налево, направо, наверх, вниз, скорость, радиус, размножение, увеличение жизни, стоять на месте]
         left, right, up, down = random.randint(1, 100), random.randint(1, 100), \
                                 random.randint(1, 100), random.randint(1, 100)
         speed, radius, duplicate, plus_life = random.randint(1, config.SIZE_UNIT), random.randint(1, 100), \
@@ -200,12 +200,12 @@ def _draw_radius_unit(WINDOW, WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_START):
                 if food_insert not in config_game.units_for_food:
                     config_game.units_for_food[config_game.units.index(unit)] = food_insert
 
-        if config.DRAW_RADIUS:
-            color = config_game.unit_color[config_game.units.index(unit)]
-            pygame.draw.rect(WINDOW, (color),
-                             (x_start_radius, y_start_radius,
-                              SIZE_RADIUS, SIZE_RADIUS),
-                             1)
+            if config.DRAW_RADIUS:
+                color = config_game.unit_color[config_game.units.index(unit)]
+                pygame.draw.rect(WINDOW, (color),
+                                 (x_start_radius, y_start_radius,
+                                  SIZE_RADIUS, SIZE_RADIUS),
+                                 1)
 
 
 def _moving_unit(WINDOW, WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_START):
@@ -395,7 +395,7 @@ def _zero_step(WINDOW, WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_START):
         config_game.now_year += 1
         config_game.time_step = 0
         config_game.now_mouth = 0
-        dominant_gen()
+        # threading.Thread(target=dominant_gen()).start()
     if config_game.time_step >= config.ONE_YEAR / 12 * config_game.now_mouth:
         config_game.now_mouth += 1
         for unit in config_game.units:
