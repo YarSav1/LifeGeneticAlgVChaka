@@ -226,33 +226,37 @@ def _moving_unit(WINDOW, WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_START):
 
         x_now = config_game.units_coordinates[config_game.units.index(unit)][0]
         y_now = config_game.units_coordinates[config_game.units.index(unit)][1]
-        if x_now + config.SIZE_UNIT + 1 > WINDOW_WIDTH:  # справа край экрана
+        if x_now + 1 > WINDOW_WIDTH:  # справа край экрана
             # print(f'[{x_now},{y_now}] - {WINDOW_START}-{WINDOW_WIDTH} | 0 - {WINDOW_HEIGHT}')
             config_game.units_coordinates[config_game.units.index(unit)] = [int(WINDOW_START), y_now]
+            config_game.units_for_food[config_game.units.index(unit)] = [None, None]
                 # x_dec = random.choices(['left', 'stop'], weights=[dec_left, dec_stop], k=1)[0]
                 # if x_dec == 'left':
                 #     plus_x = -random.randint(1, speed_unit)
                 # elif x_dec == 'stop':
                 #     plus_x = 0
-        elif x_now - config.SIZE_UNIT < WINDOW_START:  # слева край экрана
+        elif x_now < WINDOW_START:  # слева край экрана
             # print(f'[{x_now},{y_now}] - {WINDOW_START}-{WINDOW_WIDTH} | 0 - {WINDOW_HEIGHT}')
             config_game.units_coordinates[config_game.units.index(unit)] = [int(WINDOW_WIDTH-config.SIZE_UNIT), y_now]
+            config_game.units_for_food[config_game.units.index(unit)] = [None, None]
             #     x_dec = random.choices(['right', 'stop'], weights=[dec_right, dec_stop], k=1)[0]
             #     if x_dec == 'right':
             #         plus_x = random.randint(1, speed_unit)
             #     elif x_dec == 'stop':
             #         plus_x = 0
-        elif y_now - config.SIZE_UNIT < 0:  # верх край экрана
+        elif y_now < 0:  # верх край экрана
             # print(f'[{x_now},{y_now}] - {WINDOW_START}-{WINDOW_WIDTH} | 0 - {WINDOW_HEIGHT}')
             config_game.units_coordinates[config_game.units.index(unit)] = [x_now, int(WINDOW_HEIGHT)-config.SIZE_UNIT]
+            config_game.units_for_food[config_game.units.index(unit)] = [None, None]
             #     y_dec = random.choices(['down', 'stop'], weights=[dec_down, dec_stop], k=1)[0]
             #     if y_dec == 'down':
             #         plus_y = random.randint(1, speed_unit)
             #     elif y_dec == 'stop':
             #         plus_y = 0
-        elif y_now + config.SIZE_UNIT > WINDOW_HEIGHT:  # низ, край экрана
+        elif y_now > WINDOW_HEIGHT:  # низ, край экрана
             # print(f'[{x_now},{y_now}] - {WINDOW_START}-{WINDOW_WIDTH} | 0 - {WINDOW_HEIGHT}')
             config_game.units_coordinates[config_game.units.index(unit)] = [x_now, 0]
+            config_game.units_for_food[config_game.units.index(unit)] = [None, None]
             #     y_dec = random.choices(['up', 'stop'], weights=[dec_up, dec_stop], k=1)[0]
             #     if y_dec == 'up':
             #         plus_y = -random.randint(1, speed_unit)
