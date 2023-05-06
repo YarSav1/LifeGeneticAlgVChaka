@@ -1,3 +1,5 @@
+import threading
+
 import pygame
 
 import config
@@ -29,7 +31,7 @@ while running == 1:
     pygame.display.update()  # обновляем экран
 
     # Обрабатываем по разделам на экране.
-    field_settings.detection_win.detection(WINDOW, WINDOW_WIDTH, WINDOW_HEIGHT, CLOCK)
+    threading.Thread(target=field_settings.detection_win.detection, args=(WINDOW, WINDOW_WIDTH, WINDOW_HEIGHT, CLOCK)).start()
     field_simulation.detection_win.detection(WINDOW, WINDOW_WIDTH, WINDOW_HEIGHT)
 
     config_game.time_step+=1

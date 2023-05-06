@@ -1,5 +1,6 @@
 # СИМУЛЯЦИЯ
 import random
+import threading
 import time
 from collections import Counter
 
@@ -54,7 +55,7 @@ def _insert_unit(id_unit, x, y, unit=None, color=None):
         #  [налево, направо, наверх, вниз, скорость, радиус, размножение, увеличение жизни]
         left, right, up, down = random.randint(1, 100), random.randint(1, 100), \
                                 random.randint(1, 100), random.randint(1, 100)
-        speed, radius, duplicate, plus_life = random.randint(1, config.SIZE_UNIT), random.randint(1, 20), \
+        speed, radius, duplicate, plus_life = random.randint(1, config.SIZE_UNIT), random.randint(1, 100), \
                                               random.randint(1, 100), random.randint(1, 100)
         stop = random.randint(1, 100)
         config_game.unit_genes.append([left, right, up, down, speed, radius, duplicate, plus_life, stop])
@@ -174,33 +175,34 @@ def _draw_unit(WINDOW, WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_START):
 
 def _draw_radius_unit(WINDOW, WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_START):
     for unit in config_game.units:
-        x = config_game.units_coordinates[config_game.units.index(unit)][0] + config.SIZE_UNIT / 2
-        y = config_game.units_coordinates[config_game.units.index(unit)][1] + config.SIZE_UNIT / 2
-        color_unit = unit
-        SIZE_RADIUS = config.SIZE_UNIT * config_game.unit_genes[config_game.units.index(unit)][4]
-        x_start_radius, y_start_radius = x - SIZE_RADIUS / 2, y - SIZE_RADIUS / 2
-        x_end_radius, y_end_radius = x_start_radius + SIZE_RADIUS, y_start_radius + SIZE_RADIUS
 
-        food_coord = []
-        for food in config_game.food:
-            if x_start_radius < food[0] < x_end_radius:
-                if y_start_radius < food[1] < y_end_radius:
-                    food_coord.append(food)
-        #
-        # for x_d in range(int(x_start_radius), int(x_end_radius)):
-        #     for y_d in range(int(y_start_radius), int(y_end_radius)):
-        #         if [x_d, y_d] in config_game.food:
-        #             food_coord.append([x_d, y_d])
+        if config_game.units_for_food[config_game.units.index(unit)] == [None, None]:
+            x = config_game.units_coordinates[config_game.units.index(unit)][0] + config.SIZE_UNIT / 2
+            y = config_game.units_coordinates[config_game.units.index(unit)][1] + config.SIZE_UNIT / 2
 
-        # print(food_coord)
-        if len(food_coord) != 0:
-            food_insert = random.choice(food_coord)
-            if food_insert not in config_game.units_for_food:
-                if config_game.units_for_food[config_game.units.index(unit)] == [None, None]:
+            SIZE_RADIUS = config.SIZE_UNIT * config_game.unit_genes[config_game.units.index(unit)][4]
+            x_start_radius, y_start_radius = x - SIZE_RADIUS / 2, y - SIZE_RADIUS / 2
+            x_end_radius, y_end_radius = x_start_radius + SIZE_RADIUS, y_start_radius + SIZE_RADIUS
+            food_coord = []
+            for food in config_game.food:
+                if x_start_radius < food[0] < x_end_radius:
+                    if y_start_radius < food[1] < y_end_radius:
+                        food_coord.append(food)
+            #
+            # for x_d in range(int(x_start_radius), int(x_end_radius)):
+            #     for y_d in range(int(y_start_radius), int(y_end_radius)):
+            #         if [x_d, y_d] in config_game.food:
+            #             food_coord.append([x_d, y_d])
+
+            # print(food_coord)
+            if len(food_coord) != 0:
+                food_insert = random.choice(food_coord)
+                if food_insert not in config_game.units_for_food:
                     config_game.units_for_food[config_game.units.index(unit)] = food_insert
 
         if config.DRAW_RADIUS:
-            pygame.draw.rect(WINDOW, (color_unit),
+            color = config_game.unit_color[config_game.units.index(unit)]
+            pygame.draw.rect(WINDOW, (color),
                              (x_start_radius, y_start_radius,
                               SIZE_RADIUS, SIZE_RADIUS),
                              1)
@@ -400,10 +402,10 @@ def _zero_step(WINDOW, WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_START):
             config_game.units_life[config_game.units.index(unit)] += 1
 
         pygame.draw.rect(WINDOW, WHITE, (WINDOW_START, 0, WINDOW_WIDTH, WINDOW_HEIGHT))
-        _draw_food(WINDOW, WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_START)
+        threading.Thread(target=_draw_food, args= (WINDOW, WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_START)).start()
         _draw_unit(WINDOW, WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_START)
 
-        _draw_radius_unit(WINDOW, WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_START)
+        threading.Thread(target=_draw_radius_unit, args=(WINDOW, WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_START)).start()
         _moving_unit(WINDOW, WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_START)
         _duplicate(WINDOW)
         _plus_life(WINDOW)
