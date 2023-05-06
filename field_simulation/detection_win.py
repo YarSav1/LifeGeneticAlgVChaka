@@ -325,7 +325,7 @@ def dominant_gen():
     lll = []
     for gens in config_game.unit_genes:
         in_lll = ''
-        for gen in (gens[4],gens[5],gens[6], gens[7]):
+        for gen in gens:
             in_lll+=f'{gen} '
         lll.append(in_lll)
     my_dict = Counter(lll)
