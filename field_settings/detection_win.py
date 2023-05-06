@@ -22,9 +22,10 @@ def detection(WINDOW, WINDOW_WIDTH, WINDOW_HEIGHT, CLOCK):
         descent_y = now_year(WINDOW, WINDOW_WIDTH, WINDOW_HEIGHT, descent_y)
         descent_y = now_mouth(WINDOW, WINDOW_WIDTH, WINDOW_HEIGHT, descent_y)
         descent_y = line(WINDOW, WINDOW_WIDTH, WINDOW_HEIGHT, descent_y)
-        descent_y = top_three_gens(WINDOW, WINDOW_WIDTH, WINDOW_HEIGHT, descent_y)
-        descent_y = three_rect(WINDOW, WINDOW_WIDTH, WINDOW_HEIGHT, descent_y)
-        descent_y = line(WINDOW, WINDOW_WIDTH, WINDOW_HEIGHT, descent_y)
+        if config_game.start is True:
+            descent_y = top_three_gens(WINDOW, WINDOW_WIDTH, WINDOW_HEIGHT, descent_y)
+            descent_y = three_rect(WINDOW, WINDOW_WIDTH, WINDOW_HEIGHT, descent_y)
+            descent_y = line(WINDOW, WINDOW_WIDTH, WINDOW_HEIGHT, descent_y)
 
 
 
@@ -169,29 +170,30 @@ def three_rect(WINDOW, WINDOW_WIDTH, WINDOW_HEIGHT, descent_y):
     #
     # WINDOW.blit(Text, (centre_x, descent_y))
     descent_y += WINDOW_HEIGHT / 100 + w
+    if len(for_color) > 0:
+        Text = config.ShentoxRegular16.render(f'Топ-1: {for_color[0]}', True, (0, 0, 0))
+        w, h = Text.get_width(), Text.get_height()  # узнаем размер текста
+        centre_x = WINDOW_WIDTH / 2 - w / 2
 
-    Text = config.ShentoxRegular16.render(f'Топ-1: {for_color[0]}', True, (0, 0, 0))
-    w, h = Text.get_width(), Text.get_height()  # узнаем размер текста
-    centre_x = WINDOW_WIDTH / 2 - w / 2
+        WINDOW.blit(Text, (centre_x, descent_y))
 
-    WINDOW.blit(Text, (centre_x, descent_y))
+        descent_y += WINDOW_HEIGHT / 100 + h
+    if len(for_color) > 1:
+        Text = config.ShentoxRegular16.render(f'Топ-2: {for_color[1]}', True, (0, 0, 0))
+        w, h = Text.get_width(), Text.get_height()  # узнаем размер текста
+        centre_x = WINDOW_WIDTH / 2 - w / 2
 
-    descent_y += WINDOW_HEIGHT / 100 + h
+        WINDOW.blit(Text, (centre_x, descent_y))
 
-    Text = config.ShentoxRegular16.render(f'Топ-2: {for_color[1]}', True, (0, 0, 0))
-    w, h = Text.get_width(), Text.get_height()  # узнаем размер текста
-    centre_x = WINDOW_WIDTH / 2 - w / 2
+        descent_y += WINDOW_HEIGHT / 100 + h
+    if len(for_color)> 2:
 
-    WINDOW.blit(Text, (centre_x, descent_y))
+        Text = config.ShentoxRegular16.render(f'Топ-3: {for_color[2]}', True, (0, 0, 0))
+        w, h = Text.get_width(), Text.get_height()  # узнаем размер текста
+        centre_x = WINDOW_WIDTH / 2 - w / 2
 
-    descent_y += WINDOW_HEIGHT / 100 + h
+        WINDOW.blit(Text, (centre_x, descent_y))
 
-    Text = config.ShentoxRegular16.render(f'Топ-3: {for_color[2]}', True, (0, 0, 0))
-    w, h = Text.get_width(), Text.get_height()  # узнаем размер текста
-    centre_x = WINDOW_WIDTH / 2 - w / 2
-
-    WINDOW.blit(Text, (centre_x, descent_y))
-
-    descent_y += WINDOW_HEIGHT / 100 + h
+        descent_y += WINDOW_HEIGHT / 100 + h
 
     return descent_y

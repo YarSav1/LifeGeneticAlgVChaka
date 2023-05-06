@@ -73,7 +73,7 @@ def _insert_unit(id_unit, x, y, unit=None, color=None):
             elif index_genes == 4:
                 new_gen = random.randint(1, config.SIZE_UNIT)
             elif index_genes == 5:
-                new_gen = random.randint(1, 20)
+                new_gen = random.randint(1, 100)
             else:
                 return
             new_genes = []
@@ -89,10 +89,10 @@ def _delete_unit(unit):
     index_unit = config_game.units.index(unit)
     config_game.units.remove(unit)
     config_game.units_coordinates.remove(config_game.units_coordinates[index_unit])
-    config_game.units_for_food.remove(config_game.units_for_food[index_unit])
-    config_game.units_for_duplicate.remove(config_game.units_for_duplicate[index_unit])
-    config_game.units_life.remove(config_game.units_life[index_unit])
-    config_game.unit_genes.remove(config_game.unit_genes[index_unit])
+    config_game.units_for_food.pop(index_unit)
+    config_game.units_for_duplicate.pop(index_unit)
+    config_game.units_life.pop(index_unit)
+    config_game.unit_genes.pop(index_unit)
     config_game.unit_color.pop(index_unit)
 
 
@@ -127,7 +127,7 @@ def _spawn_food(WINDOW, WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_START):
         config_game.start = True
 
 
-def _draw_food(WINDOW, WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_START):
+def _draw_food(WINDOW):
     for food in config_game.food:
         x = food[0]
         y = food[1]
@@ -136,7 +136,7 @@ def _draw_food(WINDOW, WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_START):
                          (x, y, config.SIZE_FOOD, config.SIZE_FOOD))
 
 
-def _draw_unit(WINDOW, WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_START):
+def _draw_unit(WINDOW):
     for unit in config_game.units:
         x, y = config_game.units_coordinates[config_game.units.index(unit)][0], \
                config_game.units_coordinates[config_game.units.index(unit)][1]
@@ -157,37 +157,53 @@ def _draw_unit(WINDOW, WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_START):
             draw_color.append((color_unit[2]+sum_msv)-255)
         else:
             draw_color.append(color_unit[2])
+
         # print(draw_color)
-
-
         pygame.draw.rect(WINDOW, (draw_color[0], draw_color[1], draw_color[2]), (x, y, config.SIZE_UNIT, config.SIZE_UNIT))
-        for food in config_game.food:
-            if x <= food[0] <= x + config.SIZE_UNIT:
-                if y <= food[1] <= y + config.SIZE_UNIT:
-                    config_game.units_for_duplicate[config_game.units.index(unit)] += config.ENERGY_FOOD
-                    config_game.food.remove(food)
-                    for food_second in config_game.units_for_food:
-                        if food_second == food:
-                            config_game.units_for_food[config_game.units_for_food.index(food_second)] = [None, None]
+        threading.Thread(target=check_food_in_unit, args=(unit, )).start()
+def check_food_in_unit(unit):
+    x, y = config_game.units_coordinates[config_game.units.index(unit)][0], \
+           config_game.units_coordinates[config_game.units.index(unit)][1]
+    for food in config_game.food:
+        if x <= food[0] <= x + config.SIZE_UNIT:
+            if y <= food[1] <= y + config.SIZE_UNIT:
+                config_game.units_for_duplicate[config_game.units.index(unit)] += config.ENERGY_FOOD
+                config_game.food.remove(food)
+                for food_second in config_game.units_for_food:
+                    if food_second == food:
+                        config_game.units_for_food[config_game.units_for_food.index(food_second)] = [None, None]
         # del config_game.units_for_food[unit][1]
         # config_game.units_for_food.clear()
 
 
+def _draw_radius_unit_thread(unit, WINDOW):
+
+    x = config_game.units_coordinates[config_game.units.index(unit)][0] + config.SIZE_UNIT / 2
+    y = config_game.units_coordinates[config_game.units.index(unit)][1] + config.SIZE_UNIT / 2
+
+    SIZE_RADIUS = config.SIZE_UNIT * config_game.unit_genes[config_game.units.index(unit)][4]
+    x_start_radius, y_start_radius = x - SIZE_RADIUS / 2, y - SIZE_RADIUS / 2
+    x_end_radius, y_end_radius = x_start_radius + SIZE_RADIUS, y_start_radius + SIZE_RADIUS
+    food_coord = []
+    for food in config_game.food:
+        if x_start_radius < food[0] < x_end_radius:
+            if y_start_radius < food[1] < y_end_radius:
+                food_coord.append(food)
+    if len(food_coord) != 0:
+        food_insert = random.choice(food_coord)
+        if food_insert not in config_game.units_for_food:
+            config_game.units_for_food[config_game.units.index(unit)] = food_insert
+
+    if config.DRAW_RADIUS:
+        color = config_game.unit_color[config_game.units.index(unit)]
+        pygame.draw.rect(WINDOW, (color),
+                         (x_start_radius, y_start_radius,
+                          SIZE_RADIUS, SIZE_RADIUS),
+                         1)
 def _draw_radius_unit(WINDOW, WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_START):
     for unit in config_game.units:
-
         if config_game.units_for_food[config_game.units.index(unit)] == [None, None]:
-            x = config_game.units_coordinates[config_game.units.index(unit)][0] + config.SIZE_UNIT / 2
-            y = config_game.units_coordinates[config_game.units.index(unit)][1] + config.SIZE_UNIT / 2
-
-            SIZE_RADIUS = config.SIZE_UNIT * config_game.unit_genes[config_game.units.index(unit)][4]
-            x_start_radius, y_start_radius = x - SIZE_RADIUS / 2, y - SIZE_RADIUS / 2
-            x_end_radius, y_end_radius = x_start_radius + SIZE_RADIUS, y_start_radius + SIZE_RADIUS
-            food_coord = []
-            for food in config_game.food:
-                if x_start_radius < food[0] < x_end_radius:
-                    if y_start_radius < food[1] < y_end_radius:
-                        food_coord.append(food)
+            _draw_radius_unit_thread(unit, WINDOW)
             #
             # for x_d in range(int(x_start_radius), int(x_end_radius)):
             #     for y_d in range(int(y_start_radius), int(y_end_radius)):
@@ -195,17 +211,7 @@ def _draw_radius_unit(WINDOW, WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_START):
             #             food_coord.append([x_d, y_d])
 
             # print(food_coord)
-            if len(food_coord) != 0:
-                food_insert = random.choice(food_coord)
-                if food_insert not in config_game.units_for_food:
-                    config_game.units_for_food[config_game.units.index(unit)] = food_insert
 
-            if config.DRAW_RADIUS:
-                color = config_game.unit_color[config_game.units.index(unit)]
-                pygame.draw.rect(WINDOW, (color),
-                                 (x_start_radius, y_start_radius,
-                                  SIZE_RADIUS, SIZE_RADIUS),
-                                 1)
 
 
 def _moving_unit(WINDOW, WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_START):
@@ -351,7 +357,7 @@ def _food_after_dead(WINDOW, WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_START):
             x_for_food = config_game.units_coordinates[index_unit][0]
             y_for_food = config_game.units_coordinates[index_unit][1]
 
-            for_range = config_game.units_for_duplicate[config_game.units.index(unit)]
+            for_range = config_game.units_for_duplicate[config_game.units.index(unit)]//config.ENERGY_FOOD
             color_food = config.RED_1
 
             for plus_food in range(for_range):
@@ -401,15 +407,17 @@ def _zero_step(WINDOW, WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_START):
         for unit in config_game.units:
             config_game.units_life[config_game.units.index(unit)] += 1
 
-        pygame.draw.rect(WINDOW, WHITE, (WINDOW_START, 0, WINDOW_WIDTH, WINDOW_HEIGHT))
-        threading.Thread(target=_draw_food, args= (WINDOW, WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_START)).start()
-        _draw_unit(WINDOW, WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_START)
 
-        threading.Thread(target=_draw_radius_unit, args=(WINDOW, WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_START)).start()
+        pygame.draw.rect(WINDOW, WHITE, (WINDOW_START, 0, WINDOW_WIDTH, WINDOW_HEIGHT))
+        threading.Thread(target=_draw_food, args= (WINDOW, )).start()
+        _draw_unit(WINDOW)
+
+
+        _draw_radius_unit(WINDOW, WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_START)
         _moving_unit(WINDOW, WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_START)
+
         _duplicate(WINDOW)
         _plus_life(WINDOW)
-
         _food_after_dead(WINDOW, WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_START)
 
 
