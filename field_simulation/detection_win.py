@@ -336,7 +336,7 @@ def _plus_life(WINDOW):
             for_yeah = config_game.unit_genes[index_unit][7]
             result = random.choices([True, False], weights=[for_yeah, 100 - for_yeah], k=1)[0]
             if result is True:
-                print('Ктото увеличил себе жизнь')
+                # print('Ктото увеличил себе жизнь')
                 config_game.units_for_duplicate[config_game.units.index(unit)] -= config.FOOD_FOR_PLUS_LIFE
                 config_game.units_life[config_game.units.index(unit)] -= config.PLUS_LIFE_AFTER
 
@@ -380,10 +380,12 @@ def dominant_gen():
     for gens in config_game.unit_genes:
         in_lll = ''
         for gen in gens:
-            in_lll += f'{gen} '
-        lll.append(in_lll)
+            in_lll += f'{gen}.'
+
+        lll.append(in_lll[:-1])
     my_dict = Counter(lll)
-    print(f'Цветов: {len(config_game.unit_color)}:{len(config_game.units)} | {my_dict}')
+    # print(f'Цветов: {len(config_game.unit_color)}:{len(config_game.units)} | {my_dict}')
+    print(f'{my_dict}')
 
 
 def _zero_step(WINDOW, WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_START):
